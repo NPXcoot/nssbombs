@@ -1,0 +1,17 @@
+
+Per ogni bomba bisogna definire:
+ - nome
+ - descrizione
+ - def con:
+    Necessari:
+        -> textures (usata sia per l'inventario che per la bomba stessa)
+        -> ricetta / recipe_block (ricetta di default)
+        -> hit_node(self, pos) / explosion =   {
+                                                    shape = "cube",
+                                                    radius = 2,
+                                                    block = "default:ice",
+                                                    particles = false,
+                                                },
+    Aggiuntivi:
+    -> velocity
+    -> recipe_number
