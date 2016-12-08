@@ -31,7 +31,7 @@ function nssbombs:register_throwitem(name, descr, def)
                 if def.hit_node then
                     def.hit_node(self, pos)
                 else
-                    default_hit_node(self, self.explosion)
+                    default_hit_node(self, self.explosion, vec)
                 end
                 self.object:remove()
             end
@@ -54,14 +54,30 @@ function nssbombs:register_throwitem(name, descr, def)
 
 end
 
+function perpendicular_vector(vec) --returns a vector rotated of 90° in 2D
+	local ang = math.pi/2
+	local c = math.cos(ang)
+	local s = math.sin(ang)
+
+	local i = vec.x*c - vec.z*s
+	local k = vec.x*s + vec.z*c
+	local j = 0
+
+	vec = {x=i, y=j, z=k}
+	return vec
+end
+
 function default_hit_node(self, explosion)
     radius = explosion.radius
     shape = explosion.shape
-    block = explosion.block
+    block = explosion.block -- it can be a name of a block or of a schematic
     particles = explosion.particles
 
     local p = self.object:getpos()
-    local center = {x=p.x, y=p.y+radius, z=p.z}
+    local center
+    if radius then
+        center = {x=p.x, y=p.y+radius, z=p.z}
+    end
 
     if particles then
         add_effects(center, radius, block)
@@ -91,20 +107,60 @@ function default_hit_node(self, explosion)
                 end
             end
         end
+    elseif shape == "column" then
+        local base_side = 1
+        if round(radius/4) > 1 then
+            base_side = round(radius/4)
+        end
+        local height = 2*radius
+        for dx = -base_side,base_side do
+            for dy = 0,height do
+                for dz = -base_side,base_side do
+                    local pos1 = {x = p.x+dx, y=p.y+dy, z=p.z+dz}
+                    if not minetest.is_protected(pos1, "") or not minetest.get_item_group(minetest.get_node(pos1).name, "unbreakable") == 1 then
+                        minetest.set_node(pos1, {name=block})
+                    end
+                end
+            end
+        end
+    elseif shape == "circle" then
+        center = {x=p.x, y=p.y+1, z=p.z}
+        for dx = -radius,radius do
+            for dz = -radius,radius do
+                local pos1 = {x = p.x+dx, y=p.y+1, z=p.z+dz}
+                if round(math.abs(vector.length(vector.subtract(pos1,center)))) == radius then
+                    if not minetest.is_protected(pos1, "") or not minetest.get_item_group(minetest.get_node(pos1).name, "unbreakable") == 1 then
+                        minetest.set_node(pos1, {name=block})
+                    end
+                end
+            end
+        end
+    elseif shape == "wall" then
+        local vec = self.object:getvelocity()
+        vec.y = 0
+        vec = vector.normalize(vec)
+        local pr = perpendicular_vector(vec)
+
+        local m = radius/2
+        --m = round(m)
+        p = vector.subtract(p, vector.multiply(pr, m))
+
+        for i = 0, radius do
+            for dy = 0, round(radius/2) do
+                local pp = {x = p.x, y = p.y +dy, z = p.z}
+                if not minetest.is_protected(pp, "") or not minetest.get_item_group(minetest.get_node(pp).name, "unbreakable") == 1 then
+                    minetest.set_node(pp, {name=block})
+                end
+            end
+            p = vector.add(p,pr)
+        end
+    elseif shape == "schematic" then
+        --Adds a defined schematic in the landing position of the bomb
+        minetest.place_schematic(p, block, "0", {}, true)
     end
 end
 
 function add_effects(pos, radius, block)
-	minetest.add_particle({
-		pos = pos,
-		velocity = vector.new(),
-		acceleration = vector.new(),
-		expirationtime = 0.4,
-		size = radius * 10,
-		collisiondetection = false,
-		vertical = false,
-		texture = "tnt_boom.png",
-	})
 	minetest.add_particlespawner({
 		amount = 32,
 		time = 0.5,
@@ -116,8 +172,8 @@ function add_effects(pos, radius, block)
 		maxacc = vector.new(),
 		minexptime = 1,
 		maxexptime = 2.5,
-		minsize = radius * 3,
-		maxsize = radius * 5,
+		minsize = 3,
+		maxsize = 5,
 		texture = "tnt_smoke.png",
 	})
 
@@ -138,8 +194,8 @@ function add_effects(pos, radius, block)
 		maxacc = vector.new(),
 		minexptime = 1,
 		maxexptime = 2.5,
-		minsize = radius * 3,
-		maxsize = radius * 5,
+		minsize = 3,
+		maxsize = 5,
 		texture = texture2,
 	})
 
@@ -155,11 +211,19 @@ function add_effects(pos, radius, block)
 		maxacc = {x = 0, y = -10, z = 0},
 		minexptime = 0.8,
 		maxexptime = 2.0,
-		minsize = radius * 0.66,
-		maxsize = radius * 2,
+		minsize = 0.66,
+		maxsize = 2,
 		texture = texture1,
 		collisiondetection = true,
 	})
+end
 
-
+function round(n)
+	if (n > 0) then
+		return n % 1 >= 0.5 and math.ceil(n) or math.floor(n)
+	else
+		n = -n
+		local t = n % 1 >= 0.5 and math.ceil(n) or math.floor(n)
+		return -t
+	end
 end

@@ -4,8 +4,8 @@ nssbombs:register_throwitem("ice", "Ice Bomb", {
     recipe_number = 8,
     recipe_block = "default:ice",
     explosion = {
-        shape = "sphere",
-        radius = 5,
+        shape = "wall",
+        radius = 20,
         block = "default:ice",
         particles = true,
     },
@@ -16,10 +16,22 @@ nssbombs:register_throwitem("fire", "Fire Bomb", {
     textures = "fire_bomb.png",
     recipe_block = "bucket:lava_bucket",
     explosion = {
-        shape = "sphere",
-        radius = 4,
+        shape = "circle",
+        radius = 6,
         block = "fire:basic_flame",
         particles = true,
+    },
+})
+
+--Schematic bomb
+nssbombs:register_throwitem("schematic", "Schematic Bomb", {
+    textures = "fire_bomb.png",
+    recipe_block = "bucket:water_bucket",
+    explosion = {
+        shape = "schematic",
+        --radius = 5,
+        block = minetest.get_modpath("nssb").."/schems/piccoghiaccio.mts",
+        --particles = true,
     },
 })
 
@@ -40,4 +52,10 @@ hit_node = function(self,pos)
         end
     end
 end,
+]]
+--[[
+Schematic spawning:
+block=minetest.get_modpath("nssb").."/schems/".. build ..".mts"
+
+
 ]]
