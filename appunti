@@ -15,3 +15,23 @@ Per ogni bomba bisogna definire:
     Aggiuntivi:
     -> velocity
     -> recipe_number
+
+
+Bombe presenti:
+mobs_examples.lua:
+ - stone_wall_bomb
+ - Cubic Ice Shell bomb
+ - Fire circle
+ - Lava pool
+ - schematic bomb
+
+Nssm_weapons:
+ - cobweb_bomb
+ - cubic mantis clay shell bomb
+ -
+
+ nssbombs:register_throwitem("nssm:", "", {
+     textures = "",
+     recipe_number = ,
+     recipe = ,
+ })

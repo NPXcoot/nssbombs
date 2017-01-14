@@ -1,20 +1,34 @@
---Ice bomb
-nssbombs:register_throwitem("ice", "Ice Bomb", {
+--Stone Wall bomb
+nssbombs:register_throwitem("nssbombs:stone_wall_bomb", "Stone Wall Bomb", {
+    textures = "ice_bomb.png",
+    recipe_number = 8,
+    recipe_block = "default:cobble",
+    explosion = {
+        shape = "wall",
+        radius = 10,
+        block = "default:stone",
+        particles = true,
+    },
+})
+
+--Cubic Ice Shell bomb
+nssbombs:register_throwitem("nssbombs:ice_bomb", "Cubic Ice Shell bomb", {
     textures = "ice_bomb.png",
     recipe_number = 8,
     recipe_block = "default:ice",
     explosion = {
-        shape = "wall",
-        radius = 20,
+        shape = "cubic_shell",
+        radius = 2,
         block = "default:ice",
         particles = true,
     },
 })
 
---Fire bomb
-nssbombs:register_throwitem("fire", "Fire Bomb", {
+--Fire Circle bomb
+nssbombs:register_throwitem("nssbombs:fire_bomb", "Fire Bomb", {
     textures = "fire_bomb.png",
-    recipe_block = "bucket:lava_bucket",
+    recipe_block = "fire:flint_and_steel",
+    recipe_number = 4,
     explosion = {
         shape = "circle",
         radius = 6,
@@ -23,15 +37,41 @@ nssbombs:register_throwitem("fire", "Fire Bomb", {
     },
 })
 
---Schematic bomb
-nssbombs:register_throwitem("schematic", "Schematic Bomb", {
-    textures = "fire_bomb.png",
+--Lava pool
+nssbombs:register_throwitem("nssbombs:lava_bomb", "Lava Bomb", {
+    textures = "lava_bomb.png",
+    recipe_block = "bucket:lava_bucket",
+    recipe_number = 3,
+    explosion = {
+        shape = "pool",
+        radius = 2,
+        block = "default:lava_source",
+        particles = false,
+    }
+})
+
+--Water column
+nssbombs:register_throwitem("nssbombs:water_column_bomb", "Water Colun Bomb", {
+    textures = "water_column_bomb.png",
     recipe_block = "bucket:water_bucket",
+    recipe_number = 6,
+    explosion = {
+        shape = "column",
+        radius = 5,
+        block = "default:water_source",
+        particles = false,
+    }
+})
+
+--Schematic bomb
+nssbombs:register_throwitem("nssbombs:schematic_bomb", "Schematic Bomb", {
+    textures = "fire_bomb.png",
+    recipe_block = "bucket:empty_bucket",
     explosion = {
         shape = "schematic",
-        --radius = 5,
-        block = minetest.get_modpath("nssb").."/schems/piccoghiaccio.mts",
-        --particles = true,
+        radius = 9,
+        block = minetest.get_modpath("nssbombs").."/schems/simple_house.mts",
+        particles = true,
     },
 })
 
