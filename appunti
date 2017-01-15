@@ -35,3 +35,10 @@ Nssm_weapons:
      recipe_number = ,
      recipe = ,
  })
+
+Cosa rimane da fare:
+ - riscrivere le particles;
+ - finire di aggiungere le bombe di esempio;
+ - eliminare le textures non usate;
+ - scrivere bene delle istruzioni/commentare il codice
+ - rilasciare.

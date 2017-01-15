@@ -78,20 +78,19 @@ function perpendicular_vector(vec) --returns a vector rotated of 90° in 2D (x a
 end
 
 function default_hit_node(self, explosion)
-    radius = explosion.radius
-    shape = explosion.shape
-    block = explosion.block -- it can be a name of a block or of a schematic
-    particles = explosion.particles
+    local radius = explosion.radius
+    local shape = explosion.shape
+    local block = explosion.block -- it can be a name of a block or of a schematic
+    local particles = explosion.particles
+    local sound = explosion.sound
 
-    local p = self.object:getpos()
-    local center
-    if radius then
-        center = {x=p.x, y=p.y+radius, z=p.z}
-    end
+    local p = self.object:getpos() --position of the impact between the bomb and the ground
+    local center = {x=p.x, y=p.y, z=p.z}
+    minetest.chat_send_all("ciao")
 
     if shape == "cube" then
         for dx = -radius,radius do
-            for dy = 0,2*radius do
+            for dy = -radius,radius do
                 for dz = -radius,radius do
                     local pos1 = {x = p.x+dx, y=p.y+dy, z=p.z+dz}
                     if not minetest.is_protected(pos1, "") or not minetest.get_item_group(minetest.get_node(pos1).name, "unbreakable") == 1 then
@@ -113,10 +112,10 @@ function default_hit_node(self, explosion)
         end
     elseif shape == "sphere" then
         for dx = -radius,radius do
-            for dy = 0,2*radius do
+            for dy = -radius,radius do
                 for dz = -radius,radius do
                     local pos1 = {x = p.x+dx, y=p.y+dy, z=p.z+dz}
-                    if math.abs(vector.length(vector.subtract(pos1,center))) <= radius then
+                    if math.abs(vector.length(vector.subtract(pos1,p))) <= radius then
                         if not minetest.is_protected(pos1, "") or not minetest.get_item_group(minetest.get_node(pos1).name, "unbreakable") == 1 then
                             minetest.set_node(pos1, {name=block})
                         end
@@ -125,6 +124,7 @@ function default_hit_node(self, explosion)
             end
         end
     elseif shape == "sphere_shell" then
+        center.y = p.y + radius
         for dx = -radius,radius do
             for dy = 0,2*radius do
                 for dz = -radius,radius do
@@ -138,13 +138,12 @@ function default_hit_node(self, explosion)
             end
         end
     elseif shape == "cubic_shell" then
-        local y = p.y + radius
+        center.y = p.y + radius
         for dx = -radius,radius do
             for dy = -radius,radius do
                 for dz = -radius,radius do
-                    local pos1 = {x = p.x+dx, y=y+dy, z=p.z+dz}
+                    local pos1 = {x = p.x+dx, y=center.y+dy, z=p.z+dz}
                     if ((math.abs(dz)==radius)or(math.abs(dx)==radius)or(math.abs(dy)==radius)) then
-                    --if math.abs(vector.length(vector.subtract(pos1,center))) == radius then
                         if not minetest.is_protected(pos1, "") or not minetest.get_item_group(minetest.get_node(pos1).name, "unbreakable") == 1 then
                             minetest.set_node(pos1, {name=block})
                         end
@@ -169,7 +168,7 @@ function default_hit_node(self, explosion)
             end
         end
     elseif shape == "circle" then
-        center = {x=p.x, y=p.y+1, z=p.z}
+        center.y = p.y + 1
         for dx = -radius,radius do
             for dy = 0, 1 do
                 for dz = -radius,radius do
@@ -189,7 +188,6 @@ function default_hit_node(self, explosion)
         local pr = perpendicular_vector(vec)
 
         local m = radius/2
-        --m = round(m)
         p = vector.subtract(p, vector.multiply(pr, m))
 
         for i = 0, radius do
@@ -215,43 +213,56 @@ function default_hit_node(self, explosion)
         explosion.radius parameter
         --]]
         if radius then
-            center = {x = p.x - radius/2, y = p.y, z = p.z - radius/2}
-            minetest.place_schematic(center, block, "0", {}, true)
+            local angle = {x = p.x - radius/2, y = p.y, z = p.z - radius/2}
+            minetest.place_schematic(angle, block, "0", {}, true)
         else
             minetest.place_schematic(p, block, "0", {}, true)
         end
     elseif shape == "add_entity" then
         --[[
         Adds an entity in the landing position.
-        In this case block contains the name of the entity
-        to be added.
+        In this case "block" contains the name of the entity to be added.
         ]]
         minetest.add_entity(p, block)
     elseif shape == "tnt_explosion" then
         tnt.boom(p, {damage_radius=radius,radius=radius,ignore_protection=false})
     end
 
-
-
-    if particles and block and center and not shape == "tnt_explosion" then
+    if particles and (shape ~= "tnt_explosion") then
         add_effects(center, radius, block)
+    end
+    if sound and (shape ~= "tnt_explosion") then
+        if sound == true then
+            minetest.sound_play("tnt_explode",{
+    			object = self.object,
+    			max_hear_distance = radius*16
+    		})
+        else
+            minetest.sound_play(sound,{
+    			object = self.object,
+    			max_hear_distance = radius*16
+    		})
+        end
     end
 end
 
 function add_effects(pos, radius, block)
+    local velocity = 1.9*math.log(radius)
+    local q = 20*math.log(radius)
+
 	minetest.add_particlespawner({
-		amount = 32,
-		time = 0.5,
+		amount = q,
+		time = 0.3,
 		minpos = vector.subtract(pos, radius / 2),
 		maxpos = vector.add(pos, radius / 2),
-		minvel = {x = -10, y = -10, z = -10},
-		maxvel = {x = 10, y = 10, z = 10},
+		minvel = {x = -velocity, y = -velocity, z = -velocity},
+		maxvel = {x = velocity, y = velocity, z = velocity},
 		minacc = vector.new(),
 		maxacc = vector.new(),
-		minexptime = 1,
-		maxexptime = 2.5,
-		minsize = 3,
-		maxsize = 5,
+		minexptime = 0.5,
+		maxexptime = 1,
+		minsize = 9,
+		maxsize = 10,
 		texture = "tnt_smoke.png",
 	})
 
@@ -262,37 +273,19 @@ function add_effects(pos, radius, block)
     end
 
     minetest.add_particlespawner({
-        amount = 32,
+        amount = q,
 		time = 0.5,
 		minpos = vector.subtract(pos, radius / 2),
 		maxpos = vector.add(pos, radius / 2),
-		minvel = {x = -10, y = -10, z = -10},
-		maxvel = {x = 10, y = 10, z = 10},
+        minvel = {x = -velocity, y = -velocity, z = -velocity},
+		maxvel = {x = velocity, y = velocity, z = velocity},
 		minacc = vector.new(),
 		maxacc = vector.new(),
-		minexptime = 1,
-		maxexptime = 2.5,
-		minsize = 3,
-		maxsize = 5,
+		minexptime = 0.5,
+		maxexptime = 1,
+		minsize = 9,
+		maxsize = 10,
 		texture = texture2,
-	})
-
-	local texture1 = "tnt_blast.png" --fallback texture
-	minetest.add_particlespawner({
-		amount = 32,
-		time = 0.1,
-		minpos = vector.subtract(pos, radius / 2),
-		maxpos = vector.add(pos, radius / 2),
-		minvel = {x = -3, y = 0, z = -3},
-		maxvel = {x = 3, y = 5,  z = 3},
-		minacc = {x = 0, y = -10, z = 0},
-		maxacc = {x = 0, y = -10, z = 0},
-		minexptime = 0.8,
-		maxexptime = 2.0,
-		minsize = 0.66,
-		maxsize = 2,
-		texture = texture1,
-		collisiondetection = true,
 	})
 end
 

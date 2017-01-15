@@ -1,6 +1,6 @@
 --Stone Wall bomb
 nssbombs:register_throwitem("nssbombs:stone_wall_bomb", "Stone Wall Bomb", {
-    textures = "ice_bomb.png",
+    textures = "stonewall_bomb.png",
     recipe_number = 8,
     recipe_block = "default:cobble",
     explosion = {
@@ -47,6 +47,7 @@ nssbombs:register_throwitem("nssbombs:lava_bomb", "Lava Bomb", {
         radius = 2,
         block = "default:lava_source",
         particles = false,
+        sound = true,
     }
 })
 
@@ -63,9 +64,19 @@ nssbombs:register_throwitem("nssbombs:water_column_bomb", "Water Colun Bomb", {
     }
 })
 
+nssbombs:register_throwitem("nssbombs:tnt_bomb", "TNT explosion bomb", {
+    textures = "bomb_bomb.png",
+    recipe_block = "tnt:tnt",
+    recipe_number = 6,
+    explosion = {
+        shape = "tnt_explosion",
+        radius = 5,
+    }
+})
+
 --Schematic bomb
 nssbombs:register_throwitem("nssbombs:schematic_bomb", "Schematic Bomb", {
-    textures = "fire_bomb.png",
+    textures = "schematic_bomb.png",
     recipe_block = "bucket:empty_bucket",
     explosion = {
         shape = "schematic",
