@@ -1,4 +1,7 @@
-function nssbombs:register_throwitem(name, descr, def)
+function nssbombs:register_throwitem(
+    name,       --used for the craftitem and the entity
+    descr,      --used for the craftitem
+    def)        --array containing the definition parameters
 
     minetest.register_craftitem(name, {
         description = descr,
@@ -80,9 +83,9 @@ end
 function default_hit_node(self, explosion)
     local radius = explosion.radius
     local shape = explosion.shape
-    local block = explosion.block -- it can be a name of a block or of a schematic
-    local particles = explosion.particles
-    local sound = explosion.sound
+    local block = explosion.block -- it can be a name of a block, of a schematic or of an entity
+    local particles = explosion.particles   --if you want to use the particles (boolean)
+    local sound = explosion.sound   -- sound for the explosion, true to use the default sound
 
     local p = self.object:getpos() --position of the impact between the bomb and the ground
     local center = {x=p.x, y=p.y, z=p.z}

@@ -107,6 +107,19 @@ end,
 --[[
 Schematic spawning:
 block=minetest.get_modpath("nssb").."/schems/".. build ..".mts"
-
-
 ]]
+
+nssbombs:register_throwitem("nssbombs:teleport_bomb", "Teleport Bomb", {
+    textures = "teleport_bomb.png",
+    recipe_number = 10,
+    recipe_block = "default:gold_ingot",
+    hit_node = function(self,pos)
+        local pos1 = {x = pos.x, y=pos.y+1, z=pos.z}
+        local pos2 = {x = pos.x, y=pos.y+2, z=pos.z}
+        if not minetest.is_protected(pos1, "") or not minetest.get_item_group(minetest.get_node(pos1).name, "unbreakable") == 1 then
+            minetest.set_node(pos1, {name="air"})
+            minetest.set_node(pos2, {name="air"})
+            self.placer:setpos(pos1)
+        end
+    end,
+})

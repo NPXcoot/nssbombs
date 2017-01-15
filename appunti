@@ -42,3 +42,9 @@ Cosa rimane da fare:
  - eliminare le textures non usate;
  - scrivere bene delle istruzioni/commentare il codice
  - rilasciare.
+
+ recipe = {
+     {'nssm:slothful_soul_fragment', 'nssm:black_powder', 'nssm:slothful_soul_fragment'},
+     {'nssm:black_powder', 'nssm:slothful_soul_fragment', 'nssm:black_powder'},
+     {'nssm:slothful_soul_fragment', 'nssm:black_powder', 'nssm:slothful_soul_fragment'},
+ },
