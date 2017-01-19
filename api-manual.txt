@@ -1,0 +1,65 @@
+This is a simple api which aims to simplify the work for modders who want to
+add throwitems (items you can throw) to minetest.
+It also contains some examples with some standard throwitems.
+
+Define a throwitem is really simple, you can use this model:
+
+nssbombs:register_throwitem("name_of_your_mod:name_of_the_item", "Description of the item", { --the "nssbombs" mod has to be a dependency of your mod
+
+    --Features of the object:
+    textures = "your_texture.png",      --the texture is used both for the image inventory and for the flying entity
+    velocity = num,                 --optional: velocity of the obejct when you throw it
+    visual_size = {x=xsize, y= ysize},  --option: size of the object when flying
+
+    --Recipe for crafting it:
+    recipe_number = num,            --number of the items as output of the recipe
+    --to define the recipe you need to use one of the following (not both)
+    recipe_block = "mod:block",     --you have to choose a block used for the recipe, if you use this instruction the recipe will be the standard one, see below
+    recipe = {},                    --array with standard recipe definition. You can also use a shapeless recipe, but you need to include also the following:
+    --recipe_type = "shapeless",    --uncomment if your recipe is a shapeless one (and only if you have defined the recipe with the array)
+
+    -- Function to be executed when it hits the ground. You have two possibilities:
+    -- you can specify your custom function with:
+    hit_node = function (self, pos)
+        your code here
+    end,
+    -- Or you can use one of the default explosion types by including this array:
+    explosion = {               //see below for the options
+        shape = "something",
+        radius = num,
+        block = "something",
+        particles = boolean,
+        sound = "something",
+    }
+})
+
+The default recipe (used if you specify only the recipe_block) is:
+recipe = {
+    {def.recipe_block, def.recipe_block, def.recipe_block},
+    {"tnt:gunpowder", "default:mese_crystal_fragment", "tnt:gunpowder"},
+    {def.recipe_block, def.recipe_block, def.recipe_block},
+}
+
+If you want to use one of the default explosion types you have the include the explosion array with this keys inside:
+ - radius, number that define the size of the explosion;
+ - block, it can be:
+    - name of a block, for example "default:ice";
+    - name of a schematic file, if you use the shape "schematic";
+    - name of an entity, for example "nssm:duck", if you use the shape "add_entity";
+ - shape, you can choose between:
+    -"cube"         --spawns a cube of the block specified of the specified size
+    -"pool"         --spawns a "pool" of the specified block and size, see the lava_bomb as example
+    -"sphere"       --spawns a cube of the block specified of the specified size
+    -"sphere_shell"
+    -"cubic_shell"
+    -"column"       --see water column bomb as example
+    -"circle"       --see Fire circle bomb
+    -"wall"         --spawns a big (it depends on the radius specifies) wall where the bomb lands
+    -"schematic"    --to easily add a schematic (see the Schematic bomb for an example), if you specify with the radius parameter the size of the base of the schematic it's going to be centered.
+    -"add_entity"   --to spawn mobs for example
+    -"tnt_explosion"--if you simply want an explosion in the landing position
+ - particles, boolean (true/false) to define if you want the particles
+ - sound, boolean or the name of an audio file
+
+Take a look at the file "examples.lua" for the examples and if you want more
+of them you can find them in nssm

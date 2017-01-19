@@ -81,15 +81,14 @@ function perpendicular_vector(vec) --returns a vector rotated of 90° in 2D (x a
 end
 
 function default_hit_node(self, explosion)
-    local radius = explosion.radius
-    local shape = explosion.shape
+    local radius = explosion.radius  --size of the explosion
+    local shape = explosion.shape   --to choose the explosion type
     local block = explosion.block -- it can be a name of a block, of a schematic or of an entity
     local particles = explosion.particles   --if you want to use the particles (boolean)
     local sound = explosion.sound   -- sound for the explosion, true to use the default sound
 
     local p = self.object:getpos() --position of the impact between the bomb and the ground
     local center = {x=p.x, y=p.y, z=p.z}
-    minetest.chat_send_all("ciao")
 
     if shape == "cube" then
         for dx = -radius,radius do

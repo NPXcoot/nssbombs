@@ -64,6 +64,7 @@ nssbombs:register_throwitem("nssbombs:water_column_bomb", "Water Colun Bomb", {
     }
 })
 
+--Tnt Bomb
 nssbombs:register_throwitem("nssbombs:tnt_bomb", "TNT explosion bomb", {
     textures = "bomb_bomb.png",
     recipe_block = "tnt:tnt",
@@ -74,10 +75,15 @@ nssbombs:register_throwitem("nssbombs:tnt_bomb", "TNT explosion bomb", {
     }
 })
 
---Schematic bomb
+--Schematic bomb (house)
 nssbombs:register_throwitem("nssbombs:schematic_bomb", "Schematic Bomb", {
     textures = "schematic_bomb.png",
-    recipe_block = "bucket:empty_bucket",
+    recipe_number = 4,
+    recipe = {
+        {"default:wood", "default:wood", "default:wood"},
+        {"default:brick", "default:mese_crystal_fragment", "default:brick"},
+        {"default:cobble", "default:cobble", "default:cobble"}
+    },
     explosion = {
         shape = "schematic",
         radius = 9,
@@ -86,29 +92,7 @@ nssbombs:register_throwitem("nssbombs:schematic_bomb", "Schematic Bomb", {
     },
 })
 
---[[
-hit_node = function(self,pos)
-    for dx = -1,1 do
-        for dy = 1,3 do
-            for dz = -1,1 do
-                local pos1 = {x = pos.x+dx, y=pos.y+dy, z=pos.z+dz}
-                local pos2 = {x = pos.x, y=pos.y+1, z=pos.z}
-                local pos3 = {x = pos.x, y=pos.y+2, z=pos.z}
-                if not minetest.is_protected(pos1, "") or not minetest.get_item_group(minetest.get_node(pos1).name, "unbreakable") == 1 then
-                    minetest.set_node(pos1, {name="default:ice"})
-                    minetest.set_node(pos2, {name="air"})
-                    minetest.set_node(pos3, {name="air"})
-                end
-            end
-        end
-    end
-end,
-]]
---[[
-Schematic spawning:
-block=minetest.get_modpath("nssb").."/schems/".. build ..".mts"
-]]
-
+--Teleport Bomb
 nssbombs:register_throwitem("nssbombs:teleport_bomb", "Teleport Bomb", {
     textures = "teleport_bomb.png",
     recipe_number = 10,
