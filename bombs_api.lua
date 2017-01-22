@@ -18,8 +18,9 @@ function nssbombs:register_throwitem(
             obj:setvelocity(vec)
             obj:setacceleration(acc)
             obj:get_luaentity().placer = placer
-
-            itemstack:take_item()
+            if not minetest.setting_getbool("creative_mode") then
+				itemstack:take_item()
+			end
             return itemstack
         end,
     })
