@@ -51,6 +51,7 @@ If you want to use one of the default explosion types you have to include the ex
     -"pool"         --spawns a "pool" of the specified block and size, see the lava_bomb as example
     -"sphere"       --spawns a cube of the block specified of the specified size
     -"sphere_shell"
+    -"sphere_cover" --covers the ground inside an imaginary sphere with block
     -"cubic_shell"
     -"column"       --see water column bomb as example
     -"circle"       --see Fire circle bomb
