@@ -139,6 +139,23 @@ function default_hit_node(self, explosion)
                 end
             end
         end
+    elseif shape == "sphere_cover" then
+        for dx = -radius,radius do
+            for dy = radius,-radius,-1 do
+                for dz = -radius,radius do
+                    local pos1 = {x = p.x+dx, y=p.y+dy, z=p.z+dz}
+                    if math.abs(vector.length(vector.subtract(pos1,p))) <= radius then
+                        local node_at = minetest.get_node_or_nil(pos1)
+                        local node_below = minetest.get_node_or_nil({x=pos1.x, y=pos1.y-1, z=pos1.z})
+                        if node_at and node_below and node_at.name == 'air' and node_below.name ~= 'air' then
+                            if not minetest.is_protected(pos1, "") or not minetest.get_item_group(minetest.get_node(pos1).name, "unbreakable") == 1 then
+                                minetest.set_node(pos1, {name=block})
+                            end
+                        end
+                    end
+                end
+            end
+        end
     elseif shape == "cubic_shell" then
         center.y = p.y + radius
         for dx = -radius,radius do
